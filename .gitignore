@@ -1,0 +1,7 @@
+__pycache__/
+.env
+venv/
+node_modules/
+postgres_data/
+*.sqlite3
+.DS_Store
