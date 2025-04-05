@@ -6,3 +6,4 @@ postgres_data/
 *.sqlite3
 .DS_Store
 pfa_venv/
+backend/pfa_venv/
