@@ -1,6 +1,6 @@
 __pycache__/
 .env
-venv/
+pfa_venv/
 node_modules/
 postgres_data/
 *.sqlite3
