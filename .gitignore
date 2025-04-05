@@ -5,3 +5,4 @@ node_modules/
 postgres_data/
 *.sqlite3
 .DS_Store
+pfa_venv/
