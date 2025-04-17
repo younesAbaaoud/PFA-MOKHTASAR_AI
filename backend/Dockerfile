@@ -1,31 +1,28 @@
-FROM python:3.10-slim
+FROM python:3.10-slim as builder
 
 WORKDIR /app
 
-# Install system dependencies and python3-venv
 RUN apt-get update && apt-get install -y \
-    python3-venv \
     build-essential \
+    libffi-dev \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a virtual environment named pfa_venv in /app
-RUN python3 -m venv /app/pfa_venv
-
-# Activate venv by adjusting PATH
-ENV PATH="/app/pfa_venv/bin:$PATH"
-
-# Upgrade pip inside the venv
-RUN pip install --upgrade pip
-
-# Copy requirements and install them in venv
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --user --no-cache-dir -r requirements.txt
 
-# Copy the backend project files
+FROM python:3.10-slim
+WORKDIR /app
+
+COPY --from=builder /root/.local /root/.local
+
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/app:/app/app  
+ENV UVICORN_RELOAD=true
+
 COPY . .
 
-# Expose backend port (FastAPI default is 8000)
 EXPOSE 8000
 
-# Run FastAPI server
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
