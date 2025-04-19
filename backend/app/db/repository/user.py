@@ -19,6 +19,6 @@ class UserRepository(BaseRepository):
         user = self.session.query(User).filter_by(email = email).first()
         return user
 
-    def id(self , user_id : int) -> User:
+    def get_user_by_id(self , user_id : int) -> User:
         user = self.session.query(User).filter_by(id = user_id)
         return user
