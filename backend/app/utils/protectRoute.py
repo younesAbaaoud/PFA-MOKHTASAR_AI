@@ -4,9 +4,16 @@ from typing import Annotated, Union
 from app.core.security.authHandler import AuthHandler
 from app.services.userService import UserService
 from app.core.database import get_db
-from app.db.schema.user import UserOutput
+from app.db.schemas.user import UserOutput
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+from app.core.security.hashHelper import HashHelper
+from app.db.repository.user import UserRepository
+import os
 
 AUTH_PREFIX = 'Bearer '  
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def get_current_user(
         session : Session = Depends(get_db),

@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.utils.init_db import create_tables
 from app.routers.auth import authRouter
-from app.routers.stt import sttRouter
+from app.routers.professeur.stt import sttRouter
 from app.utils.protectRoute import get_current_user
-from app.db.schema.user import UserOutput
+from app.db.schemas.user import UserOutput
 import os
 
 @asynccontextmanager

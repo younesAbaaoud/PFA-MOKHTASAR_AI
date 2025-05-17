@@ -1,6 +1,7 @@
 from .base import BaseRepository
 from app.db.models.user import User
-from app.db.schema.user import UserInCreate
+from app.db.schemas.user import UserInCreate
+from sqlalchemy.orm import Session
 
 class UserRepository(BaseRepository):
     def create_user(self, user_data : UserInCreate):

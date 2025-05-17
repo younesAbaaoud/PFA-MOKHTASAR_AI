@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
-from app.services.whisperService import WhisperService
+from app.services.professeur.whisperService import WhisperService
 from app.utils.protectRoute import get_current_user
-from app.db.schema.user import UserOutput
+from app.db.schemas.user import UserOutput
 
 sttRouter = APIRouter()
 whisper_service = WhisperService(model_size="base")  # Changed from medium to base for faster processing

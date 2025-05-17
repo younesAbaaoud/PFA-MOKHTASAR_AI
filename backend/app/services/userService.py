@@ -1,8 +1,9 @@
+from app.db.schemas.user import UserOutput, UserInCreate, UserInLogin, UserWithToken
 from app.db.repository.user import UserRepository
-from app.db.schema.user import UserOutput, UserInCreate, UserInLogin, UserWithToken
-from app.core.security.hashHelper import HashHelper
 from app.core.security.authHandler import AuthHandler
+from app.db.models.user import User
 from sqlalchemy.orm import Session
+from app.core.security.hashHelper import HashHelper
 from fastapi import HTTPException
 
 class UserService:
@@ -10,7 +11,7 @@ class UserService:
         self.__userRepository = UserRepository(session=session)
         
     def signup(self, user_details : UserInCreate) -> UserOutput:
-        if self.__userRepository.get_user_by_email(email=user_details.email):
+        if self.__userRepository.user_existe_by_email(email=user_details.email):
             raise HTTPException(status_code = 400, detail = "Email already registered. Please login instead.")
         
         hashed_password = HashHelper.get_password_hash(plain_password=user_details.password)
