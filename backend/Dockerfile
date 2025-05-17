@@ -1,28 +1,48 @@
-FROM python:3.10-slim as builder
+# Build stage for heavy dependencies
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libffi-dev \
-    libssl-dev \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --user --no-cache-dir -r requirements.txt
 
-FROM python:3.10-slim
+# Install dependencies in a virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install dependencies with increased timeout and retries
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --timeout 1000 --retries 10 -r requirements.txt
+
+# Final stage
+FROM python:3.11-slim
+
 WORKDIR /app
 
-COPY --from=builder /root/.local /root/.local
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV PATH=/root/.local/bin:$PATH
-ENV PYTHONPATH=/app:/app/app  
-ENV UVICORN_RELOAD=true
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
+# Copy application code
 COPY . .
 
+# Create a non-root user
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
+
+# Expose the port
 EXPOSE 8000
 
+# Command to run the application
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

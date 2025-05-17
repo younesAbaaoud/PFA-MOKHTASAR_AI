@@ -25,4 +25,61 @@
     --accent: 210 40% 96%;
     --accent-foreground: 222 47% 11%;
   }
+  
+  .dark {
+    --background: 222 47% 11%;       /* Dark mode background */
+    --foreground: 210 40% 98%;       /* Dark mode text */
+  }
+}
+
+@layer components {
+  /* Boutons - increased border radius */
+  button, .btn {
+    @apply rounded-2xl;
+  }
+  
+  /* Inputs - increased border radius */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="search"],
+  .input {
+    @apply rounded-xl;
+  }
+  
+  /* Select */
+  .select, .select-trigger {
+    @apply rounded-xl;
+  }
+  
+  /* Checkbox/Radio */
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply rounded-lg; /* Keeping these more subtle */
+  }
+  
+  /* Cards */
+  .card {
+    @apply rounded-xl;
+  }
+  
+  /* Alertes & Badges */
+  .alert, .badge {
+    @apply rounded-xl;
+  }
+  
+  /* Tooltips */
+  .tooltip-content {
+    @apply rounded-xl;
+  }
+}
+
+@layer utilities {
+  /* Pour les cas particuliers où shadcn utilise des styles inline */
+  .rounded-inherit {
+    border-radius: inherit;
+  }
 }

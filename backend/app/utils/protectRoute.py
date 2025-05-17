@@ -12,27 +12,49 @@ def get_current_user(
         session : Session = Depends(get_db),
         authorization : Annotated[Union[str,None],Header()] = None
 ) -> UserOutput :
-    auth_exception = HTTPException(
-        status_code = status.HTTP_401_UNAUTHORIZED,
-        detail = "Invalid Authentication Credentails"
-    )
-
     if not authorization:
-        raise auth_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No authorization header provided"
+        )
     
     if not authorization.startswith(AUTH_PREFIX):
-        raise auth_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization header format. Expected 'Bearer <token>'"
+        )
     
-    payload = AuthHandler.decode_jwt(token=authorization[len(AUTH_PREFIX):])
+    token = authorization[len(AUTH_PREFIX):]
+    payload = AuthHandler.decode_jwt(token=token)
 
-    if payload and payload["user_id"]:
-        try:
-            user  = UserService(session=session).get_user_by_id(payload["user_id"])
-            return UserOutput(
-                id = user.id,
-                username = user.username,
-                email = user.email
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
+
+    if not payload.get("user_id"):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload"
+        )
+
+    try:
+        user = UserService(session=session).get_user_by_id(payload["user_id"])
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found"
             )
-        except Exception as error:
-            raise error
-    raise auth_exception
+        return UserOutput(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            role=user.role
+        )
+    except Exception as error:
+        print(f"Error getting user: {str(error)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Error authenticating user"
+        )
