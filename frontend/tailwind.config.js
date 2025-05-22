@@ -2,8 +2,10 @@
 module.exports = {
 	darkMode: ["class"],
 	content: [
-	  "./src/**/*.{ts,tsx}",
-	  "./app/**/*.{ts,tsx}",
+	  './pages/**/*.{js,ts,jsx,tsx,mdx}',
+	  './components/**/*.{js,ts,jsx,tsx,mdx}',
+	  './app/**/*.{js,ts,jsx,tsx,mdx}',
+	  './src/**/*.{ts,tsx}',
 	],
 	theme: {
 	  container: {
@@ -47,9 +49,43 @@ module.exports = {
 			foreground: "hsl(var(--accent-foreground))",
 		  },
 		  
-		  // Your custom colors (additional to ShadCN)
-		  'primary-light': "hsl(var(--primary-light))",
-		  'primary-pale': "hsl(var(--primary-pale))",
+		  // Notre palette de couleurs personnalisée
+		  cream: "#F3F3E0",
+		  navy: "#133E87",
+		  blue: "#608BC1",
+		  "blue-light": "#CBDCEB",
+		  
+		  // Couleurs supplémentaires pour l'interface
+		  'primary-light': "#608BC1",  // Bleu principal plus clair (notre blue)
+		  'primary-pale': "#CBDCEB",   // Bleu très clair (notre blue-light)
+		  card: {
+			DEFAULT: "#F3F3E0",
+			foreground: "#133E87",
+		  },
+		},
+		keyframes: {
+		  "accordion-down": {
+			from: { height: 0 },
+			to: { height: "var(--radix-accordion-content-height)" },
+		  },
+		  "accordion-up": {
+			from: { height: "var(--radix-accordion-content-height)" },
+			to: { height: 0 },
+		  },
+		  "float": {
+			"0%, 100%": { transform: "translateY(0)" },
+			"50%": { transform: "translateY(-10px)" }
+		  },
+		  "pulse-soft": {
+			"0%, 100%": { opacity: 1 },
+			"50%": { opacity: 0.8 }
+		  }
+		},
+		animation: {
+		  "accordion-down": "accordion-down 0.2s ease-out",
+		  "accordion-up": "accordion-up 0.2s ease-out",
+		  "float": "float 6s ease-in-out infinite",
+		  "pulse-soft": "pulse-soft 3s ease-in-out infinite"
 		},
 	  },
 	},

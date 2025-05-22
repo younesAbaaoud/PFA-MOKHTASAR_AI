@@ -1,114 +1,86 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, Mic, BookOpen, Clock, ChevronLeft, ChevronRight, User } from "lucide-react";
-import Link from 'next/link';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from "@/components/ui/select";
-import Image from 'next/image';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Eye, EyeOff, Check, AlertCircle, User, Mail, Lock, GraduationCap, Briefcase } from "lucide-react";
 import { authService } from '@/services/auth';
 
-const features = [
-  {
-    icon: <Mic className="w-12 h-12 text-indigo-600" />,
-    title: "Transcription Automatique",
-    description: "Transformez vos enregistrements audio en temps réel",
-    illustration: (
-      <Image 
-        src="/images/picture2.png"
-        alt="Transcription Automatique"
-        width={350}
-        height={250}
-        className="mx-auto mb-4"
-        priority
-      />
-    )
-  },
-  {
-    icon: <BookOpen className="w-12 h-12 text-indigo-600" />,
-    title: "Résumés Intelligents",
-    description: "Obtenez des synthèses automatiques de vos enregistrements",
-    illustration: (
-      <Image 
-        src="/images/picture1.png"
-        alt="Résumés Intelligents"
-        width={350}
-        height={250}
-        className="mx-auto mb-4"
-        priority
-      />
-    )
-  },
-  {
-    icon: <Clock className="w-12 h-12 text-indigo-600" />,
-    title: "Apprentissage Personnalisé",
-    description: "Suivez votre progression et vos réalisations",
-    illustration: (
-      <Image 
-        src="/images/picture3.png"
-        alt="Apprentissage Personnalisé"
-        width={350}
-        height={250}
-        className="mx-auto mb-4"
-        priority
-      />
-    )
-  }
-];
+type Role = "student" | "teacher" | "";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<Role>("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [role, setRole] = useState("");
-  const [currentFeature, setCurrentFeature] = useState(0);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentFeature((prev) => (prev + 1) % features.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (confirmPassword) {
+      setPasswordsMatch(password === confirmPassword);
+    } else {
+      setPasswordsMatch(true);
+    }
+  }, [password, confirmPassword]);
 
-  const nextFeature = () => {
-    setCurrentFeature((prev) => (prev + 1) % features.length);
-  };
-
-  const prevFeature = () => {
-    setCurrentFeature((prev) => (prev - 1 + features.length) % features.length);
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "Veuillez entrer une adresse e-mail valide";
+    }
+    
+    if (password.length < 8) {
+      errors.password = "Le mot de passe doit contenir au moins 8 caractères";
+    }
+    
+    if (password !== confirmPassword) {
+      errors.confirmPassword = "Les mots de passe ne correspondent pas";
+    }
+    
+    if (!role) {
+      errors.role = "Veuillez sélectionner un rôle";
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!acceptTerms || !role || !email || !password || password !== confirmPassword || !fullName) {
-      setError("Veuillez remplir tous les champs et accepter les conditions.");
+    
+    if (!validateForm()) {
       return;
     }
+    
+    if (!agreeTerms) {
+      setError("Veuillez accepter les conditions d'utilisation");
+      return;
+    }
+    
     setIsLoading(true);
+    
     try {
       await authService.register({
-        username: fullName,
+        username: name,
         email,
         password,
-        role: role === "etudiant" ? "ETUDIANT" : "PROFESSEUR"
+        role: role === "teacher" ? "PROFESSEUR" : "ETUDIANT"
       });
       router.push("/auth/login");
     } catch (err) {
@@ -118,178 +90,269 @@ export default function RegisterPage() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <div className="min-h-screen flex">
-      {/* LEFT SIDE - Partie arrondie */}
-      <div className="hidden lg:block w-1/2 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-r-[3rem] overflow-hidden">
-          {/* Logo stylisé */}
-          <div className="absolute top-8 left-8 z-10">
-            <h1 className="text-3xl font-bold font-sans tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 drop-shadow-sm">
-                mokhtassar ai
-              </span>
-            </h1>
+    <div className="flex min-h-screen bg-[#F3F3E0]">
+      {/* Form Section */}
+      <div className="w-full lg:w-1/2 p-6 sm:p-10 flex flex-col justify-center">
+        <div className="max-w-md mx-auto w-full">
+          <Link href="/" className="block mb-8">
+            <span className="font-bold text-2xl tracking-tight text-navy group-hover:scale-105 transition-transform">
+              Mokhtassar<span className="text-blue">AI</span>
+            </span>
+          </Link>
+          
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Rejoindre Mokhtassar AI</h1>
+            <p className="text-gray-600 mt-2">Créez un compte pour commencer à résumer votre contenu audio</p>
           </div>
-          {/* Carrousel */}
-          <div className="h-full flex items-center justify-center relative">
-            <button 
-              onClick={prevFeature}
-              className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 shadow-md z-10 hover:bg-white"
-            >
-              <ChevronLeft className="w-6 h-6 text-indigo-600" />
-            </button>
-            <button 
-              onClick={nextFeature}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 shadow-md z-10 hover:bg-white"
-            >
-              <ChevronRight className="w-6 h-6 text-indigo-600" />
-            </button>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentFeature}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.5 }}
-                className="flex flex-col items-center text-center px-8 w-full"
-              >
-                {features[currentFeature].illustration}
-                <div className="flex flex-col items-center mt-4">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                    {features[currentFeature].title}
-                  </h2>
-                  <p className="text-gray-600 max-w-md">
-                    {features[currentFeature].description}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
-              {features.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentFeature(index)}
-                  className={`w-2 h-2 rounded-full transition-colors ${currentFeature === index ? 'bg-indigo-600' : 'bg-gray-300'}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* RIGHT SIDE - Formulaire */}
-      <div className="w-full lg:w-1/2 bg-white p-6 sm:p-12 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">Créer un compte</h1>
-            <p className="text-gray-500">Commencez votre parcours avec nous</p>
-          </div>
+
           {error && (
             <div className="bg-red-50 text-red-600 px-4 py-3 rounded-md text-sm mb-4">
               {error}
             </div>
           )}
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <Label htmlFor="fullName" className="text-gray-700">Nom complet</Label>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder="Votre nom complet"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                className="mt-1 focus:ring-2 focus:ring-indigo-500 rounded-full px-4 py-2 border border-gray-300 focus:border-indigo-500"
-              />
+          
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1">
+              <Label htmlFor="name" className="text-sm font-medium">Nom Complet</Label>
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-gray-400">
+                  <User size={18} />
+                </div>
+                <Input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Votre nom complet"
+                  className="pl-10 h-12 bg-white border-gray-200 focus:border-[#608BC1] focus:ring-[#608BC1]"
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="email" className="text-gray-700">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="exemple@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="mt-1 focus:ring-2 focus:ring-indigo-500 rounded-full px-4 py-2 border border-gray-300 focus:border-indigo-500"
-              />
+            
+            <div className="space-y-1">
+              <Label htmlFor="role" className="text-sm font-medium">Rôle</Label>
+              <div className="relative">
+                <Select value={role} onValueChange={(value) => setRole(value as Role)}>
+                  <SelectTrigger className={`h-12 bg-white border-gray-200 focus:border-[#608BC1] focus:ring-[#608BC1] ${formErrors.role ? 'border-red-500' : ''}`}>
+                    <div className="flex items-center">
+                      {role === "teacher" && <Briefcase size={16} className="mr-2 text-gray-500" />}
+                      {role === "student" && <GraduationCap size={16} className="mr-2 text-gray-500" />}
+                      <SelectValue placeholder="Sélectionnez votre rôle" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="teacher">
+                      <div className="flex items-center">
+                        <Briefcase size={16} className="mr-2 text-gray-500" />
+                        <span>Professeur</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="student">
+                      <div className="flex items-center">
+                        <GraduationCap size={16} className="mr-2 text-gray-500" />
+                        <span>Étudiant</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {formErrors.role && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle size={14} className="mr-1" />
+                    {formErrors.role}
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <Label htmlFor="role" className="text-gray-700">Rôle</Label>
-              <Select onValueChange={(value) => setRole(value)} required>
-                <SelectTrigger className="mt-1 focus:ring-2 focus:ring-indigo-500 rounded-full px-4 py-2 border border-gray-300 focus:border-indigo-500 h-auto">
-                  <SelectValue placeholder="Sélectionnez votre rôle" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl">
-                  <SelectItem value="etudiant">Étudiant</SelectItem>
-                  <SelectItem value="professeur">Professeur</SelectItem>
-                </SelectContent>
-              </Select>
+            
+            <div className="space-y-1">
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-gray-400">
+                  <Mail size={18} />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Votre adresse email"
+                  required
+                  className={`pl-10 h-12 bg-white border-gray-200 focus:border-[#608BC1] focus:ring-[#608BC1] ${formErrors.email ? 'border-red-500' : ''}`}
+                />
+                {formErrors.email && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle size={14} className="mr-1" />
+                    {formErrors.email}
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <Label htmlFor="password" className="text-gray-700">Mot de passe</Label>
-              <div className="relative mt-1">
+            
+            <div className="space-y-1">
+              <Label htmlFor="password" className="text-sm font-medium">Mot de passe</Label>
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-gray-400">
+                  <Lock size={18} />
+                </div>
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Créez un mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Créez un mot de passe"
                   required
-                  className="focus:ring-2 focus:ring-indigo-500 rounded-full px-4 py-2 border border-gray-300 focus:border-indigo-500"
+                  className={`pl-10 pr-10 h-12 bg-white border-gray-200 focus:border-[#608BC1] focus:ring-[#608BC1] ${formErrors.password ? 'border-red-500' : ''}`}
                 />
-                <button
+                <button 
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
+                {formErrors.password && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle size={14} className="mr-1" />
+                    {formErrors.password}
+                  </div>
+                )}
               </div>
             </div>
-            <div>
-              <Label htmlFor="confirmPassword" className="text-gray-700">Confirmation</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirmez votre mot de passe"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+            
+            <div className="space-y-1">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirmez le mot de passe</Label>
+              <div className="relative">
+                <div className="absolute left-3 top-3 text-gray-400">
+                  <Lock size={18} />
+                </div>
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirmez votre mot de passe"
+                  required
+                  className={`pl-10 pr-10 h-12 bg-white border-gray-200 focus:border-[#608BC1] focus:ring-[#608BC1] ${!passwordsMatch || formErrors.confirmPassword ? 'border-red-500' : ''}`}
+                />
+                <button 
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+                {(formErrors.confirmPassword || !passwordsMatch) && confirmPassword && (
+                  <div className="flex items-center mt-1 text-red-500 text-sm">
+                    <AlertCircle size={14} className="mr-1" />
+                    {formErrors.confirmPassword || "Les mots de passe ne correspondent pas"}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2 mt-4">
+              <Checkbox 
+                id="terms" 
+                checked={agreeTerms}
+                onCheckedChange={(checked) => setAgreeTerms(!!checked)}
                 required
-                className="mt-1 focus:ring-2 focus:ring-indigo-500 rounded-full px-4 py-2 border border-gray-300 focus:border-indigo-500"
+                className="h-4 w-4 border-gray-300 text-[#133E87]"
               />
+              <label
+                htmlFor="terms"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                J'accepte les{" "}
+                <Link href="/terms" className="text-[#133E87] hover:text-[#608BC1] underline">
+                  Conditions d'utilisation
+                </Link>{" "}
+                et la{" "}
+                <Link href="/privacy" className="text-[#133E87] hover:text-[#608BC1] underline">
+                  Politique de confidentialité
+                </Link>
+              </label>
             </div>
-            <div className="flex items-start">
-              <Checkbox
-                id="terms"
-                checked={acceptTerms}
-                onCheckedChange={(checked: boolean) => setAcceptTerms(checked)}
-                className="mt-1 mr-2"
-              />
-              <Label htmlFor="terms" className="text-gray-700">
-                J'accepte les <Link href="/terms" className="text-indigo-600 hover:underline">conditions d'utilisation</Link>
-              </Label>
-            </div>
+
             <Button 
               type="submit" 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 mt-4 rounded-full py-2"
-              disabled={!acceptTerms || !role || isLoading}
+              className="w-full mt-6 h-12 text-md bg-[#133E87] hover:bg-[#0c2b61] text-white"
+              disabled={isLoading || !passwordsMatch || !agreeTerms}
             >
-              {isLoading ? 'Création du compte...' : 'Créer un compte'}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Création du compte...
+                </div>
+              ) : "Créer un compte"}
             </Button>
           </form>
-          <div className="text-center text-sm text-gray-500 mt-6">
-            Vous avez déjà un compte ?{' '}
-            <Link href="/auth/login" className="text-indigo-600 hover:underline font-medium">
-              Se connecter
-            </Link>
+          
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-600">
+              Vous avez déjà un compte ?{" "}
+              <Link href="/auth/login" className="text-[#133E87] hover:text-[#608BC1] font-medium">
+                Connectez-vous
+              </Link>
+            </p>
           </div>
-        </motion.div>
+        </div>
+      </div>
+      
+      {/* Hero Section */}
+      <div className="hidden lg:block lg:w-1/2 bg-[#133E87] text-white">
+        <div className="h-full flex flex-col items-center justify-center p-12">
+          <div className="max-w-lg">
+            <h2 className="text-4xl font-bold mb-6">Transformez Votre Contenu Audio</h2>
+            <p className="text-xl mb-8">
+              Avec Mokhtassar AI, convertissez la parole en texte et créez des résumés concis de votre contenu en quelques clics.
+            </p>
+            <div className="grid grid-cols-1 gap-6">
+              {[
+                "Technologie de reconnaissance vocale précise",
+                "Algorithmes de résumé intelligents",
+                "Support multilingue pour un contenu global"
+              ].map((feature, index) => (
+                <div key={index} className="flex items-center">
+                  <div className="bg-[#CBDCEB] rounded-full p-2 mr-4">
+                    <Check className="h-5 w-5 text-[#133E87]" />
+                  </div>
+                  <p className="text-lg">{feature}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-12 p-6 bg-[#608BC1]/30 rounded-lg border border-white/20">
+              <div className="flex items-start">
+                <div className="w-10 h-10 rounded-full bg-[#CBDCEB] flex items-center justify-center mr-4 mt-1">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#133E87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="#133E87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 9H9.01" stroke="#133E87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M15 9H15.01" stroke="#133E87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-lg italic">
+                    "Mokhtassar AI a révolutionné la façon dont je traite mes enregistrements de cours. Les résumés sont précis et me font gagner des heures de travail."
+                  </p>
+                  <p className="mt-3 font-medium">- M. Youssef, Data Scientist</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

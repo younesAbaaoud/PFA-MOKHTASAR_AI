@@ -4,82 +4,83 @@
 
 @layer base {
   :root {
+    --cream: #F3F3E0;
+    --navy: #133E87;
+    --blue: #608BC1;
+    --blue-light: #CBDCEB;
+    
     --background: 60 13% 90%;        /* #F3F3E0 */
     --foreground: 215 73% 33%;       /* #133E87 */
-    
+    --card: var(--cream);
+    --card-foreground: var(--navy);
+    --popover: var(--cream);
+    --popover-foreground: var(--navy);
     --primary: 215 73% 33%;          /* #133E87 */
     --primary-foreground: 0 0% 100%; /* White */
     --primary-light: 212 48% 57%;    /* #608BC1 */
     --primary-pale: 211 48% 86%;     /* #CBDCEB */
-
-    /* ShadCN required variables */
-    --border: 215 27% 70%;
-    --input: 215 27% 70%;
-    --ring: 215 73% 33%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
     --accent: 210 40% 96%;
     --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 215 27% 70%;
+    --input: 215 27% 70%;
+    --ring: 215 73% 33%;
+    --radius: 0.5rem;
   }
-  
+
   .dark {
-    --background: 222 47% 11%;       /* Dark mode background */
-    --foreground: 210 40% 98%;       /* Dark mode text */
+    --background: var(--navy);
+    --foreground: var(--cream);
+    --card: var(--navy);
+    --card-foreground: var(--cream);
+    --popover: var(--navy);
+    --popover-foreground: var(--cream);
+    --primary: var(--cream);
+    --primary-foreground: var(--navy);
+    --secondary: var(--blue);
+    --secondary-foreground: var(--cream);
+    --muted: var(--navy);
+    --muted-foreground: var(--blue-light);
+    --accent: var(--blue);
+    --accent-foreground: var(--cream);
+    --destructive: rgb(239 68 68);
+    --destructive-foreground: var(--cream);
+    --border: var(--blue);
+    --input: var(--blue);
+    --ring: var(--blue-light);
   }
 }
 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Animations pour les liens et boutons */
 @layer components {
-  /* Boutons - increased border radius */
-  button, .btn {
-    @apply rounded-2xl;
+  .hover-link-effect {
+    @apply relative inline-block overflow-hidden;
   }
   
-  /* Inputs - increased border radius */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="number"],
-  input[type="date"],
-  input[type="time"],
-  input[type="search"],
-  .input {
-    @apply rounded-xl;
+  .hover-link-effect::after {
+    @apply content-[''] absolute bottom-0 left-0 w-0 h-0.5 bg-blue transition-all duration-300 ease-in-out;
   }
   
-  /* Select */
-  .select, .select-trigger {
-    @apply rounded-xl;
+  .hover-link-effect:hover::after {
+    @apply w-full;
   }
   
-  /* Checkbox/Radio */
-  input[type="checkbox"],
-  input[type="radio"] {
-    @apply rounded-lg; /* Keeping these more subtle */
-  }
-  
-  /* Cards */
-  .card {
-    @apply rounded-xl;
-  }
-  
-  /* Alertes & Badges */
-  .alert, .badge {
-    @apply rounded-xl;
-  }
-  
-  /* Tooltips */
-  .tooltip-content {
-    @apply rounded-xl;
-  }
-}
-
-@layer utilities {
-  /* Pour les cas particuliers où shadcn utilise des styles inline */
-  .rounded-inherit {
-    border-radius: inherit;
+  .card-hover-effect {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
   }
 }
