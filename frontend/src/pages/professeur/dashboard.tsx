@@ -267,31 +267,27 @@ export default function ProfessorDashboard() {
   ];
 
   return (
-    <div className={`relative flex ${darkMode ? "dark" : ""}`}>
+    <div className="min-h-screen bg-[#F3F3E0]">
       {/* Sidebar */}
-      <div className={`flex flex-col fixed top-0 left-0 h-screen ${isCollapsed ? "w-20" : "w-64"} bg-background border-r border-border transition-all duration-300 shadow-sm rounded-r-xl`}>
+      <div className={`flex flex-col fixed top-0 left-0 h-screen ${isCollapsed ? "w-20" : "w-64"} bg-white border-r border-gray-200 transition-all duration-300 shadow-sm`}>
         {/* Logo and toggle button */}
-        <div className="flex items-center justify-between p-2">
+        <div className="flex items-center justify-between p-4">
           {!isCollapsed && (
-            <div className="flex items-center space-x-1">
-              <Image
-                src="/images/logo.png"
-                alt="Logo"
-                width={64}
-                height={64}
-                className="rounded-xl"
-              />
-              <h1 className="font-semibold text-lg text-primary">MOKHTASAR AI</h1>
+            <div className="flex items-center space-x-2">
+              
+              <h1 className="font-bold text-xl tracking-tight text-navy">
+                Mokhtassar<span className="text-blue">AI</span>
+              </h1>
             </div>
           )}
           {isCollapsed && (
-            <div className="w-8 h-8 mx-auto bg-primary-pale rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 mx-auto bg-[#133E87]/10 rounded-lg flex items-center justify-center">
               <Image
                 src="/images/logo.png"
                 alt="Logo"
-                width={56}
-                height={40}
-                className="rounded-xl"
+                width={32}
+                height={32}
+                className="rounded-lg"
               />
             </div>
           )}
@@ -299,31 +295,35 @@ export default function ProfessorDashboard() {
             variant="ghost"
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="ml-auto text-muted-foreground rounded-2xl hover:bg-primary-pale"
+            className="ml-auto text-gray-500 hover:bg-[#133E87]/10 rounded-lg"
           >
             {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </Button>
         </div>
 
-        <Separator />
+        <Separator className="bg-gray-200" />
 
         {/* Navigation */}
         <div className="flex-1 py-6">
-          <nav className="space-y-1 px-2">
+          <nav className="space-y-1 px-3">
             {navItems.map((item, index) => (
               <TooltipProvider key={index}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant={item.active ? "secondary" : "ghost"}
-                      className={`w-full ${isCollapsed ? "justify-center" : "justify-start"} mb-1 ${item.active ? "bg-primary-pale text-primary" : "text-muted-foreground hover:bg-primary-pale/50"} rounded-2xl`}
+                      className={`w-full ${isCollapsed ? "justify-center" : "justify-start"} mb-1 ${
+                        item.active 
+                          ? "bg-[#133E87] text-white hover:bg-[#133E87]/90" 
+                          : "text-gray-600 hover:bg-[#133E87]/10"
+                      } rounded-lg`}
                     >
                       <span>{item.icon}</span>
                       {!isCollapsed && <span className="ml-3">{item.name}</span>}
                     </Button>
                   </TooltipTrigger>
                   {isCollapsed && (
-                    <TooltipContent side="right" className="rounded-xl">
+                    <TooltipContent side="right" className="bg-white border-gray-200">
                       <p>{item.name}</p>
                     </TooltipContent>
                   )}
@@ -341,14 +341,14 @@ export default function ProfessorDashboard() {
                 <Button
                   variant="ghost"
                   onClick={handleLogout}
-                  className={`w-full ${isCollapsed ? "justify-center" : "justify-start"} text-destructive hover:bg-destructive/10 rounded-2xl`}
+                  className={`w-full ${isCollapsed ? "justify-center" : "justify-start"} text-red-500 hover:bg-red-50 rounded-lg`}
                 >
                   <LogOut size={20} />
                   {!isCollapsed && <span className="ml-3">Déconnexion</span>}
                 </Button>
               </TooltipTrigger>
               {isCollapsed && (
-                <TooltipContent side="right" className="rounded-xl">
+                <TooltipContent side="right" className="bg-white border-gray-200">
                   <p>Déconnexion</p>
                 </TooltipContent>
               )}
@@ -358,15 +358,15 @@ export default function ProfessorDashboard() {
       </div>
 
       {/* Main content */}
-      <div className={`flex-1 min-h-screen ${isCollapsed ? "ml-20" : "ml-64"} transition-all duration-300 bg-background`}>
+      <div className={`flex-1 min-h-screen ${isCollapsed ? "ml-20" : "ml-64"} transition-all duration-300 bg-[#F3F3E0]`}>
         {/* Top header bar */}
-        <header className="h-16 bg-background border-b border-border shadow-sm flex items-center justify-between px-8 rounded-b-xl">
+        <header className="h-16 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between px-8">
           {/* Search bar */}
           <div className="relative w-96">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Rechercher..."
-              className="pl-8 bg-secondary border-border text-foreground rounded-xl"
+              className="pl-10 bg-gray-50 border-gray-200 text-gray-900 rounded-lg focus:border-[#133E87] focus:ring-[#133E87]"
             />
           </div>
 
@@ -377,7 +377,7 @@ export default function ProfessorDashboard() {
               variant="ghost"
               size="icon"
               onClick={() => setDarkMode(!darkMode)}
-              className="text-muted-foreground hover:bg-primary-pale/50 rounded-2xl"
+              className="text-gray-500 hover:bg-[#133E87]/10 rounded-lg"
             >
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </Button>
@@ -387,23 +387,23 @@ export default function ProfessorDashboard() {
               <DropdownMenuTrigger asChild>
                 <div className="flex items-center space-x-3 cursor-pointer">
                   <div>
-                    <p className="font-medium text-sm text-foreground">{user?.name || "Prof. MELLAH"}</p>
-                    <p className="text-xs text-muted-foreground">{user?.role || "Deep Learning"}</p>
+                    <p className="font-medium text-sm text-gray-900">{user?.name || "Prof. MELLAH"}</p>
+                    <p className="text-xs text-gray-500">{user?.role || "Deep Learning"}</p>
                   </div>
-                  <Avatar className="rounded-xl bg-primary-pale">
-                    <AvatarFallback className="rounded-xl text-primary">PR</AvatarFallback>
+                  <Avatar className="rounded-lg bg-[#133E87]/10">
+                    <AvatarFallback className="rounded-lg text-[#133E87]">PR</AvatarFallback>
                   </Avatar>
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-background border-border rounded-xl">
-                <DropdownMenuLabel className="text-foreground">Mon compte</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="hover:bg-primary-pale/50 text-foreground rounded-xl">Profil</DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-primary-pale/50 text-foreground rounded-xl">Paramètres</DropdownMenuItem>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align="end" className="bg-white border-gray-200 rounded-lg">
+                <DropdownMenuLabel className="text-gray-900">Mon compte</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-gray-200" />
+                <DropdownMenuItem className="hover:bg-[#133E87]/10 text-gray-900 rounded-lg">Profil</DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-[#133E87]/10 text-gray-900 rounded-lg">Paramètres</DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-200" />
                 <DropdownMenuItem 
                   onClick={handleLogout}
-                  className="text-destructive focus:text-destructive hover:bg-destructive/10 rounded-xl"
+                  className="text-red-500 focus:text-red-500 hover:bg-red-50 rounded-lg"
                 >
                   Déconnexion
                 </DropdownMenuItem>
@@ -415,29 +415,29 @@ export default function ProfessorDashboard() {
         {/* Page content */}
         <div className="p-8">
           <div className="flex items-center mb-6">
-            <h1 className="text-2xl font-bold text-foreground">Upload Audio</h1>
-            <Waves className="ml-2 text-primary" size={24} />
+            <h1 className="text-2xl font-bold text-gray-900">Upload Audio</h1>
+            <Waves className="ml-2 text-[#133E87]" size={24} />
           </div>
 
           {/* Upload card */}
-          <Card className="mb-8 border-border rounded-xl bg-gradient-to-br from-background to-primary-pale/10">
+          <Card className="mb-8 border-gray-200 rounded-lg bg-white">
             <CardHeader>
-              <CardTitle className="text-foreground flex items-center">
-                <Mic2 className="mr-2 text-primary" size={24} />
+              <CardTitle className="text-gray-900 flex items-center">
+                <Mic2 className="mr-2 text-[#133E87]" size={24} />
                 Télécharger un enregistrement de cours
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* File upload area */}
               {!uploadedFile ? (
-                <div className="border-2 border-dashed border-border rounded-xl p-10 text-center bg-background hover:bg-primary-pale/10 transition-colors">
+                <div className="border-2 border-dashed border-gray-200 rounded-lg p-10 text-center bg-gray-50 hover:bg-[#133E87]/5 transition-colors">
                   <div className="flex justify-center mb-4">
-                    <div className="p-4 bg-primary-pale rounded-full">
-                      <Upload size={36} className="text-primary" />
+                    <div className="p-4 bg-[#133E87]/10 rounded-full">
+                      <Upload size={36} className="text-[#133E87]" />
                     </div>
                   </div>
-                  <h3 className="text-lg font-medium text-foreground mb-2">Déposez votre fichier audio ici</h3>
-                  <p className="text-sm text-muted-foreground mb-4">ou</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Déposez votre fichier audio ici</h3>
+                  <p className="text-sm text-gray-500 mb-4">ou</p>
 
                   <div className="flex justify-center flex-col items-center">
                     <Input
@@ -451,7 +451,7 @@ export default function ProfessorDashboard() {
                     <Button
                       variant="outline"
                       onClick={triggerFileInput}
-                      className="w-48 h-12 rounded-2xl border-2 border-primary text-primary hover:bg-primary-pale/50"
+                      className="w-48 h-12 rounded-lg border-2 border-[#133E87] text-[#133E87] hover:bg-[#133E87]/10"
                     >
                       Parcourir les fichiers
                     </Button>
@@ -460,7 +460,7 @@ export default function ProfessorDashboard() {
                       <div className="mt-4 flex flex-col items-center">
                         <Button
                           onClick={startRecording}
-                          className="w-14 h-14 rounded-full p-0 flex items-center justify-center bg-primary hover:bg-primary/90"
+                          className="w-14 h-14 rounded-full p-0 flex items-center justify-center bg-[#133E87] hover:bg-[#133E87]/90"
                         >
                           <Mic size={24} className="text-white" />
                         </Button>
@@ -470,7 +470,7 @@ export default function ProfessorDashboard() {
                       <div className="flex flex-col items-center mt-4">
                         <div className="flex items-center mb-2">
                           <div className="w-3 h-3 rounded-full mr-2 animate-pulse bg-red-500"></div>
-                          <span className="text-gray-800">Enregistrement en cours: {formatDuration(recordingDuration)}</span>
+                          <span className="text-gray-900">Enregistrement en cours: {formatDuration(recordingDuration)}</span>
                         </div>
                         <Button
                           onClick={stopRecording}
@@ -486,27 +486,27 @@ export default function ProfessorDashboard() {
                     )}
                   </div>
 
-                  <p className="text-xs text-muted-foreground mt-4">Formats supportés: MP3, WAV, M4A (Max 500MB)</p>
+                  <p className="text-xs text-gray-500 mt-4">Formats supportés: MP3, WAV, M4A (Max 500MB)</p>
                 </div>
               ) : (
-                <div className="bg-primary-pale/10 rounded-xl p-6 border border-border">
+                <div className="bg-[#133E87]/5 rounded-lg p-6 border border-gray-200">
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center">
-                      <div className="bg-primary-pale p-2 rounded-xl mr-3">
-                        <File size={24} className="text-primary" />
+                      <div className="bg-[#133E87]/10 p-2 rounded-lg mr-3">
+                        <File size={24} className="text-[#133E87]" />
                       </div>
                       <div>
-                        <p className="font-medium text-foreground">{uploadedFile?.name}</p>
-                        <p className="text-sm text-muted-foreground">{uploadedFile?.size} MB</p>
+                        <p className="font-medium text-gray-900">{uploadedFile?.name}</p>
+                        <p className="text-sm text-gray-500">{uploadedFile?.size} MB</p>
                       </div>
                     </div>
                     {!processing && !completed && (
-                      <Button variant="ghost" size="icon" onClick={removeFile} className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-2xl">
+                      <Button variant="ghost" size="icon" onClick={removeFile} className="text-gray-500 hover:bg-red-50 hover:text-red-500 rounded-lg">
                         <X size={20} />
                       </Button>
                     )}
                     {completed && (
-                      <Badge className="bg-green-500 text-primary-foreground rounded-xl">
+                      <Badge className="bg-green-500 text-white rounded-lg">
                         <Check size={14} className="mr-1" /> Transcrit
                       </Badge>
                     )}
@@ -514,19 +514,19 @@ export default function ProfessorDashboard() {
 
                   {processing && (
                     <div className="mb-4">
-                      <div className="flex justify-between text-sm mb-1 text-foreground">
+                      <div className="flex justify-between text-sm mb-1 text-gray-900">
                         <span>Transcription en cours...</span>
                         <span>{progress}%</span>
                       </div>
-                      <Progress value={progress} className="h-2 rounded-xl bg-primary-pale text-primary" />
+                      <Progress value={progress} className="h-2 rounded-lg bg-[#133E87]/10 text-[#133E87]" />
                     </div>
                   )}
 
                   {transcription && (
-                    <div className="mt-4 p-4 bg-background rounded-xl border border-border">
-                      <h3 className="text-lg font-medium text-foreground mb-2">Transcription</h3>
+                    <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Transcription</h3>
                       <div className="max-h-60 overflow-y-auto">
-                        <p className="text-sm text-foreground whitespace-pre-wrap">{transcription}</p>
+                        <p className="text-sm text-gray-900 whitespace-pre-wrap">{transcription}</p>
                       </div>
                     </div>
                   )}
@@ -536,28 +536,28 @@ export default function ProfessorDashboard() {
               {/* Course information */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="module" className="text-foreground">Module</Label>
+                  <Label htmlFor="module" className="text-gray-900">Module</Label>
                   <Select value={selectedModule} onValueChange={setSelectedModule}>
-                    <SelectTrigger id="module" className="bg-background border-border text-foreground rounded-xl">
+                    <SelectTrigger id="module" className="bg-white border-gray-200 text-gray-900 rounded-lg focus:border-[#133E87] focus:ring-[#133E87]">
                       <SelectValue placeholder="Sélectionner un module" />
                     </SelectTrigger>
-                    <SelectContent className="bg-background border-border rounded-xl">
-                      <SelectItem value="ml" className="rounded-xl hover:bg-primary-pale/50">Machine Learning</SelectItem>
-                      <SelectItem value="java" className="rounded-xl hover:bg-primary-pale/50">Java</SelectItem>
-                      <SelectItem value="mobile" className="rounded-xl hover:bg-primary-pale/50">Developpement Mobile</SelectItem>
-                      <SelectItem value="dl" className="rounded-xl hover:bg-primary-pale/50">Deep Learning</SelectItem>
+                    <SelectContent className="bg-white border-gray-200 rounded-lg">
+                      <SelectItem value="ml" className="rounded-lg hover:bg-[#133E87]/10">Machine Learning</SelectItem>
+                      <SelectItem value="java" className="rounded-lg hover:bg-[#133E87]/10">Java</SelectItem>
+                      <SelectItem value="mobile" className="rounded-lg hover:bg-[#133E87]/10">Developpement Mobile</SelectItem>
+                      <SelectItem value="dl" className="rounded-lg hover:bg-[#133E87]/10">Deep Learning</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="course" className="text-foreground">Nom du cours</Label>
+                  <Label htmlFor="course" className="text-gray-900">Nom du cours</Label>
                   <Input
                     id="course"
                     value={courseName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCourseName(e.target.value)}
+                    onChange={(e) => setCourseName(e.target.value)}
                     placeholder="Ex: Introduction au machine learning"
-                    className="bg-background border-border text-foreground rounded-xl focus-visible:ring-primary"
+                    className="bg-white border-gray-200 text-gray-900 rounded-lg focus:border-[#133E87] focus:ring-[#133E87]"
                   />
                 </div>
               </div>
@@ -566,7 +566,7 @@ export default function ProfessorDashboard() {
               <Button
                 disabled={!uploadedFile || processing || completed || !selectedModule || !courseName}
                 onClick={processFile}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl"
+                className="bg-[#133E87] text-white hover:bg-[#133E87]/90 rounded-lg"
               >
                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {processing ? "Traitement en cours..." : "Traiter l'audio"}
@@ -575,10 +575,10 @@ export default function ProfessorDashboard() {
           </Card>
 
           {/* Recent uploads */}
-          <Card className="border-border rounded-xl bg-gradient-to-br from-background to-primary-pale/10">
+          <Card className="border-gray-200 rounded-lg bg-white">
             <CardHeader>
-              <CardTitle className="text-foreground flex items-center">
-                <BookOpen className="mr-2 text-primary" size={20} />
+              <CardTitle className="text-gray-900 flex items-center">
+                <BookOpen className="mr-2 text-[#133E87]" size={20} />
                 Uploads récents
               </CardTitle>
             </CardHeader>
@@ -586,26 +586,26 @@ export default function ProfessorDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left font-medium py-2 pl-2 rounded-tl-xl text-primary">
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left font-medium py-2 pl-2 rounded-tl-lg text-[#133E87]">
                         <div className="flex items-center">
                           <BookOpen size={16} className="mr-2" />
                           <span>Nom du cours</span>
                         </div>
                       </th>
-                      <th className="text-left font-medium py-2 text-primary">
+                      <th className="text-left font-medium py-2 text-[#133E87]">
                         <div className="flex items-center">
                           <Tag size={16} className="mr-2" />
                           <span>Type</span>
                         </div>
                       </th>
-                      <th className="text-left font-medium py-2 text-primary">
+                      <th className="text-left font-medium py-2 text-[#133E87]">
                         <div className="flex items-center">
                           <Calendar size={16} className="mr-2" />
                           <span>Date</span>
                         </div>
                       </th>
-                      <th className="text-left font-medium py-2 pr-2 rounded-tr-xl text-primary">
+                      <th className="text-left font-medium py-2 pr-2 rounded-tr-lg text-[#133E87]">
                         <div className="flex items-center">
                           <Check size={16} className="mr-2" />
                           <span>Status</span>
@@ -617,17 +617,17 @@ export default function ProfessorDashboard() {
                     {recentUploads.map((upload, index) => (
                       <tr
                         key={index}
-                        className="border-b border-border hover:bg-primary-pale/10 transition-colors"
+                        className="border-b border-gray-200 hover:bg-[#133E87]/5 transition-colors"
                       >
-                        <td className="py-3 pl-2 text-foreground rounded-bl-xl">{upload.name}</td>
-                        <td className="py-3 text-foreground">
-                          <Badge variant="outline" className="border-primary text-primary rounded-xl">
+                        <td className="py-3 pl-2 text-gray-900 rounded-bl-lg">{upload.name}</td>
+                        <td className="py-3 text-gray-900">
+                          <Badge variant="outline" className="border-[#133E87] text-[#133E87] rounded-lg">
                             {upload.type}
                           </Badge>
                         </td>
-                        <td className="py-3 text-muted-foreground">{upload.date}</td>
-                        <td className="py-3 pr-2 rounded-br-xl">
-                          <Badge className="bg-green-500 text-primary-foreground rounded-xl">
+                        <td className="py-3 text-gray-500">{upload.date}</td>
+                        <td className="py-3 pr-2 rounded-br-lg">
+                          <Badge className="bg-green-500 text-white rounded-lg">
                             {upload.status}
                           </Badge>
                         </td>

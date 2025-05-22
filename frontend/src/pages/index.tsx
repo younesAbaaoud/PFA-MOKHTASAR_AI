@@ -1,30 +1,28 @@
-import Image from "next/image";
-import Link from "next/link";
+import React from "react";
+import { Metadata } from "next";
+import HeroSection from "@/components/landing/hero-section";
+import FeatureSection from "@/components/landing/feature-section";
+import CTASection from "@/components/landing/cta-section";
+import TeamSection from "@/components/landing/team-section";
+import Footer from "@/components/landing/footer";
+import Header from "@/components/layout/Header";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Mokhtassar AI - Speech to Text and Summarization",
+  description: "Transform your speech into text and get powerful summarization with Mokhtassar AI",
+};
+
+export default function LandingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <Image
-          src="/images/logo.png"
-          alt="MOKHTASAR AI Logo"
-          width={200}
-          height={200}
-          className="mx-auto mb-8"
-        />
-        <h1 className="text-4xl font-bold mb-4">Welcome to MOKHTASAR AI</h1>
-        <p className="text-lg text-muted-foreground mb-8">
-          Your intelligent course summarization platform
-        </p>
-        <div className="space-x-4">
-          <Link
-            href="/auth/login"
-            className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90"
-          >
-            Get Started
-          </Link>
-        </div>
-      </div>
+    <div className="flex min-h-screen flex-col bg-cream">
+      <Header />
+      <main className="flex-1">
+        <HeroSection />
+        <FeatureSection />
+        <TeamSection />
+        <CTASection />
+      </main>
+      <Footer />
     </div>
   );
-} 
+}
